@@ -1,0 +1,3529 @@
+openapi: 3.0.3
+info:
+  description: OpenAPI 3.0
+  title: Archery API
+  version: 1.0.0
+servers:
+- url: /
+paths:
+  /api/auth/token/:
+    post:
+      description: |-
+        Takes a set of user credentials and returns an access and refresh JSON web
+        token pair to prove the authentication of those credentials.
+      operationId: api_auth_token_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenObtainPair"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenObtainPair"
+          description: ""
+      tags:
+      - api
+  /api/auth/token/refresh/:
+    post:
+      description: |-
+        Takes a refresh type JSON web token and returns an access type JSON web
+        token if the refresh token is valid.
+      operationId: api_auth_token_refresh_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenRefresh"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenRefresh"
+          description: ""
+      tags:
+      - api
+  /api/auth/token/verify/:
+    post:
+      description: |-
+        Takes a token and indicates if it is valid.  This view provides no
+        information about a token's fitness for a particular use.
+      operationId: api_auth_token_verify_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TokenVerify"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TokenVerify"
+          description: ""
+      tags:
+      - api
+  /api/schema/:
+    get:
+      description: |-
+        OpenApi3 schema for this API. Format can be selected via content negotiation.
+
+        - YAML: application/vnd.oai.openapi
+        - JSON: application/vnd.oai.openapi+json
+      operationId: api_schema_retrieve
+      parameters:
+      - explode: true
+        in: query
+        name: format
+        required: false
+        schema:
+          enum:
+          - json
+          - yaml
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: lang
+        required: false
+        schema:
+          enum:
+          - af
+          - ar
+          - ar-dz
+          - ast
+          - az
+          - be
+          - bg
+          - bn
+          - br
+          - bs
+          - ca
+          - cs
+          - cy
+          - da
+          - de
+          - dsb
+          - el
+          - en
+          - en-au
+          - en-gb
+          - eo
+          - es
+          - es-ar
+          - es-co
+          - es-mx
+          - es-ni
+          - es-ve
+          - et
+          - eu
+          - fa
+          - fi
+          - fr
+          - fy
+          - ga
+          - gd
+          - gl
+          - he
+          - hi
+          - hr
+          - hsb
+          - hu
+          - hy
+          - ia
+          - id
+          - ig
+          - io
+          - is
+          - it
+          - ja
+          - ka
+          - kab
+          - kk
+          - km
+          - kn
+          - ko
+          - ky
+          - lb
+          - lt
+          - lv
+          - mk
+          - ml
+          - mn
+          - mr
+          - ms
+          - my
+          - nb
+          - ne
+          - nl
+          - nn
+          - os
+          - pa
+          - pl
+          - pt
+          - pt-br
+          - ro
+          - ru
+          - sk
+          - sl
+          - sq
+          - sr
+          - sr-latn
+          - sv
+          - sw
+          - ta
+          - te
+          - tg
+          - th
+          - tk
+          - tr
+          - tt
+          - udm
+          - uk
+          - ur
+          - uz
+          - vi
+          - zh-hans
+          - zh-hant
+          type: string
+        style: form
+      responses:
+        "200":
+          content:
+            application/vnd.oai.openapi:
+              schema:
+                additionalProperties: {}
+                type: object
+            application/yaml:
+              schema:
+                additionalProperties: {}
+                type: object
+            application/vnd.oai.openapi+json:
+              schema:
+                additionalProperties: {}
+                type: object
+            application/json:
+              schema:
+                additionalProperties: {}
+                type: object
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      - {}
+      tags:
+      - api
+  /api/v1/instance/:
+    get:
+      description: 列出所有实例（过滤，分页）
+      operationId: api_v1_instance_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedInstanceList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 实例清单
+      tags:
+      - api
+    post:
+      description: 创建一个实例配置
+      operationId: api_v1_instance_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Instance"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Instance"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Instance"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Instance"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建实例
+      tags:
+      - api
+  /api/v1/instance/{id}/:
+    delete:
+      description: 删除一个实例配置
+      operationId: api_v1_instance_destroy
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 删除实例
+      tags:
+      - api
+    put:
+      description: 更新一个实例配置
+      operationId: api_v1_instance_update
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstanceDetail"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InstanceDetail"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InstanceDetail"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceDetail"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 更新实例
+      tags:
+      - api
+  /api/v1/instance/rds/:
+    get:
+      description: 列出所有AliyunRDS（过滤，分页）
+      operationId: api_v1_instance_rds_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedAliyunRdsList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: AliyunRDS清单
+      tags:
+      - api
+    post:
+      description: 创建一个AliyunRDS配置（包含一个CloudAccessKey）
+      operationId: api_v1_instance_rds_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AliyunRds"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AliyunRds"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AliyunRds"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AliyunRds"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建AliyunRDS
+      tags:
+      - api
+  /api/v1/instance/resource/:
+    post:
+      description: 获取实例内的资源信息
+      operationId: api_v1_instance_resource_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InstanceResource"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/InstanceResource"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/InstanceResource"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InstanceResourceList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 实例资源
+      tags:
+      - api
+  /api/v1/instance/table-instances/:
+    post:
+      description: 输入table名，返回包含该表的实例列表（固定返回status/msg/count/data）。
+      operationId: api_v1_instance_table_instances_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TableInstanceLookup"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TableInstanceLookup"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TableInstanceLookup"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TableInstanceLookupResponse"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 按表名查询所属实例
+      tags:
+      - api
+  /api/v1/instance/tunnel/:
+    get:
+      description: 列出所有隧道（过滤，分页）
+      operationId: api_v1_instance_tunnel_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedTunnelList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 隧道清单
+      tags:
+      - api
+    post:
+      description: 创建一个隧道配置
+      operationId: api_v1_instance_tunnel_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Tunnel"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Tunnel"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Tunnel"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Tunnel"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建隧道
+      tags:
+      - api
+  /api/v1/sqlquery/describetable/:
+    post:
+      operationId: api_v1_sqlquery_describetable_create
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 表结构
+      tags:
+      - api
+  /api/v1/sqlquery/execute/:
+    post:
+      operationId: api_v1_sqlquery_execute_create
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 执行查询
+      tags:
+      - api
+  /api/v1/sqlquery/favorites/:
+    post:
+      operationId: api_v1_sqlquery_favorites_create
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 收藏/取消收藏
+      tags:
+      - api
+  /api/v1/sqlquery/instances/:
+    get:
+      operationId: api_v1_sqlquery_instances_retrieve
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 可访问实例列表
+      tags:
+      - api
+  /api/v1/sqlquery/logs/:
+    get:
+      operationId: api_v1_sqlquery_logs_retrieve
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 历史查询记录
+      tags:
+      - api
+  /api/v1/sqlquery/resources/:
+    get:
+      operationId: api_v1_sqlquery_resources_retrieve
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQLQuery 实例资源列表
+      tags:
+      - api
+  /api/v1/user/:
+    get:
+      description: 列出所有用户（过滤，分页）
+      operationId: api_v1_user_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedUserList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 用户清单
+      tags:
+      - api
+    post:
+      description: 创建一个用户
+      operationId: api_v1_user_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/User"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建用户
+      tags:
+      - api
+  /api/v1/user/{id}/:
+    delete:
+      description: 删除一个用户
+      operationId: api_v1_user_destroy
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 删除用户
+      tags:
+      - api
+    put:
+      description: 更新一个用户
+      operationId: api_v1_user_update
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserDetail"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/UserDetail"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserDetail"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserDetail"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 更新用户
+      tags:
+      - api
+  /api/v1/user/2fa/:
+    post:
+      description: 配置2fa
+      operationId: api_v1_user_2fa_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFA"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TwoFA"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TwoFA"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      - {}
+      summary: 配置2fa
+      tags:
+      - api
+  /api/v1/user/2fa/save/:
+    post:
+      description: 保存2fa配置
+      operationId: api_v1_user_2fa_save_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFASave"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TwoFASave"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TwoFASave"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 保存2fa配置
+      tags:
+      - api
+  /api/v1/user/2fa/state/:
+    post:
+      description: 查询2fa配置情况
+      operationId: api_v1_user_2fa_state_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFAState"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TwoFAState"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TwoFAState"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 查询2fa配置情况
+      tags:
+      - api
+  /api/v1/user/2fa/verify/:
+    post:
+      description: 检验2fa密码
+      operationId: api_v1_user_2fa_verify_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TwoFAVerify"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/TwoFAVerify"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/TwoFAVerify"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      - {}
+      summary: 检验2fa密码
+      tags:
+      - api
+  /api/v1/user/auth/:
+    post:
+      description: 用户认证校验
+      operationId: api_v1_user_auth_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/UserAuth"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 用户认证校验
+      tags:
+      - api
+  /api/v1/user/group/:
+    get:
+      description: 列出所有用户组（过滤，分页）
+      operationId: api_v1_user_group_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedGroupList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 用户组清单
+      tags:
+      - api
+    post:
+      description: 创建一个用户组
+      operationId: api_v1_user_group_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Group"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Group"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建用户组
+      tags:
+      - api
+  /api/v1/user/group/{id}/:
+    delete:
+      description: 删除一个用户组
+      operationId: api_v1_user_group_destroy
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 删除用户组
+      tags:
+      - api
+    put:
+      description: 更新一个用户组
+      operationId: api_v1_user_group_update
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Group"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/Group"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/Group"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Group"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 更新用户组
+      tags:
+      - api
+  /api/v1/user/resourcegroup/:
+    get:
+      description: 列出所有资源组（过滤，分页）
+      operationId: api_v1_user_resourcegroup_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedResourceGroupList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 资源组清单
+      tags:
+      - api
+    post:
+      description: 创建一个资源组
+      operationId: api_v1_user_resourcegroup_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceGroup"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 创建资源组
+      tags:
+      - api
+  /api/v1/user/resourcegroup/{id}/:
+    delete:
+      description: 删除一个资源组
+      operationId: api_v1_user_resourcegroup_destroy
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      responses:
+        "204":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 删除资源组
+      tags:
+      - api
+    put:
+      description: 更新一个资源组
+      operationId: api_v1_user_resourcegroup_update
+      parameters:
+      - explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: integer
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ResourceGroup"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResourceGroup"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 更新资源组
+      tags:
+      - api
+  /api/v1/workflow/:
+    get:
+      description: 列出所有SQL上线工单（过滤，分页）
+      operationId: api_v1_workflow_list
+      parameters:
+      - description: A page number within the paginated result set.
+        explode: true
+        in: query
+        name: page
+        required: false
+        schema:
+          type: integer
+        style: form
+      - description: Number of results to return per page.
+        explode: true
+        in: query
+        name: size
+        required: false
+        schema:
+          type: integer
+        style: form
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PaginatedWorkflowContentList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQL上线工单清单
+      tags:
+      - api
+    post:
+      description: 提交一条SQL上线工单
+      operationId: api_v1_workflow_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowContent"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/WorkflowContent"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/WorkflowContent"
+        required: true
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowContent"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 提交SQL上线工单
+      tags:
+      - api
+  /api/v1/workflow/audit/:
+    post:
+      description: 审核一条工单（通过或终止）
+      operationId: api_v1_workflow_audit_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AuditWorkflow"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/AuditWorkflow"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/AuditWorkflow"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 审核工单
+      tags:
+      - api
+  /api/v1/workflow/auditlist/:
+    post:
+      description: 列出指定用户待审核清单（过滤，分页）
+      operationId: api_v1_workflow_auditlist_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowAudit"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/WorkflowAudit"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/WorkflowAudit"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowAuditList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 待审核清单
+      tags:
+      - api
+  /api/v1/workflow/execute/:
+    post:
+      description: 执行一条工单
+      operationId: api_v1_workflow_execute_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExecuteWorkflow"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ExecuteWorkflow"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ExecuteWorkflow"
+        required: true
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 执行工单
+      tags:
+      - api
+  /api/v1/workflow/log/:
+    post:
+      description: 获取某个工单的日志（分页）
+      operationId: api_v1_workflow_log_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WorkflowLog"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/WorkflowLog"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/WorkflowLog"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WorkflowLogList"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: 工单日志
+      tags:
+      - api
+  /api/v1/workflow/sqlcheck/:
+    post:
+      description: 对提供的SQL进行语法检查
+      operationId: api_v1_workflow_sqlcheck_create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExecuteCheck"
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: "#/components/schemas/ExecuteCheck"
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ExecuteCheck"
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ExecuteCheckResult"
+          description: ""
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      summary: SQL检查
+      tags:
+      - api
+  /douban/knox/generate-token/:
+    post:
+      operationId: douban_knox_generate_token_create
+      responses:
+        "200":
+          description: No response body
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - knoxApiToken: []
+      tags:
+      - douban
+  /douban/knox/revoke-all-token/:
+    post:
+      description: |-
+        Log the user out of all sessions
+        I.E. deletes all auth tokens for the user
+      operationId: douban_knox_revoke_all_token_create
+      responses:
+        "200":
+          description: No response body
+      security:
+      - knoxApiToken: []
+      tags:
+      - douban
+components:
+  schemas:
+    AliyunRds:
+      example:
+        id: 0
+        rds_dbinstanceid: rds_dbinstanceid
+        is_enable: true
+        instance: 6
+        ak:
+          id: 1
+          type: aliyun
+          key_id: key_id
+          key_secret: key_secret
+          remark: remark
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        rds_dbinstanceid:
+          maxLength: 100
+          title: 对应阿里云RDS实例ID
+          type: string
+        is_enable:
+          title: 是否启用
+          type: boolean
+        instance:
+          type: integer
+        ak:
+          $ref: "#/components/schemas/CloudAccessKey"
+      required:
+      - ak
+      - id
+      - instance
+      - rds_dbinstanceid
+      type: object
+    AuditTypeEnum:
+      description: |-
+        * `pass` - pass
+        * `cancel` - cancel
+      enum:
+      - pass
+      - cancel
+      type: string
+    AuditWorkflow:
+      example:
+        engineer: engineer
+        workflow_id: 0
+        audit_remark: audit_remark
+        workflow_type: ""
+        audit_type: ""
+      properties:
+        engineer:
+          title: 操作用户
+          type: string
+        workflow_id:
+          title: 工单id
+          type: integer
+        audit_remark:
+          title: 审批备注
+          type: string
+        workflow_type:
+          allOf:
+          - $ref: "#/components/schemas/WorkflowTypeA27Enum"
+          title: 工单类型：1-查询权限申请，2-SQL上线申请，3-数据归档申请
+        audit_type:
+          allOf:
+          - $ref: "#/components/schemas/AuditTypeEnum"
+          title: 审核类型
+      required:
+      - audit_remark
+      - audit_type
+      - engineer
+      - workflow_id
+      - workflow_type
+      type: object
+    BlankEnum:
+      enum:
+      - ""
+      type: string
+    CloudAccessKey:
+      example:
+        id: 1
+        type: aliyun
+        key_id: key_id
+        key_secret: key_secret
+        remark: remark
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        type:
+          $ref: "#/components/schemas/CloudAccessKeyTypeEnum"
+        key_id:
+          maxLength: 200
+          type: string
+        key_secret:
+          maxLength: 200
+          type: string
+        remark:
+          maxLength: 50
+          type: string
+      required:
+      - id
+      - key_id
+      - key_secret
+      type: object
+    CloudAccessKeyTypeEnum:
+      description: '* `aliyun` - aliyun'
+      enum:
+      - aliyun
+      type: string
+    CurrentStatusEnum:
+      description: |-
+        * `0` - 待审核
+        * `1` - 审核通过
+        * `2` - 审核不通过
+        * `3` - 审核取消
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+    DbTypeEnum:
+      description: |-
+        * `mysql` - MySQL
+        * `mssql` - MsSQL
+        * `redis` - Redis
+        * `pgsql` - PgSQL
+        * `oracle` - Oracle
+        * `mongo` - Mongo
+        * `phoenix` - Phoenix
+        * `odps` - ODPS
+        * `clickhouse` - ClickHouse
+        * `goinception` - goInception
+        * `cassandra` - Cassandra
+        * `doris` - Doris
+        * `elasticsearch` - Elasticsearch
+        * `opensearch` - OpenSearch
+        * `memcached` - Memcached
+        * `tdengine` - TDengine
+      enum:
+      - mysql
+      - mssql
+      - redis
+      - pgsql
+      - oracle
+      - mongo
+      - phoenix
+      - odps
+      - clickhouse
+      - goinception
+      - cassandra
+      - doris
+      - elasticsearch
+      - opensearch
+      - memcached
+      - tdengine
+      type: string
+    EnableEnum:
+      description: |-
+        * `true` - true
+        * `false` - false
+      enum:
+      - "true"
+      - "false"
+      type: string
+    ExecuteCheck:
+      example:
+        instance_id: 0
+        db_name: db_name
+        full_sql: full_sql
+      properties:
+        instance_id:
+          title: 实例id
+          type: integer
+        db_name:
+          title: 数据库名
+          type: string
+        full_sql:
+          title: SQL内容
+          type: string
+      required:
+      - db_name
+      - full_sql
+      - instance_id
+      type: object
+    ExecuteCheckResult:
+      example:
+        is_execute: false
+        checked: checked
+        warning: warning
+        error: error
+        warning_count: 0
+        error_count: 6
+        is_critical: false
+        syntax_type: 1
+        rows: ""
+        column_list: ""
+        status: status
+        affected_rows: 5
+      properties:
+        is_execute:
+          default: false
+          readOnly: true
+          type: boolean
+        checked:
+          readOnly: true
+          type: string
+        warning:
+          readOnly: true
+          type: string
+        error:
+          readOnly: true
+          type: string
+        warning_count:
+          readOnly: true
+          type: integer
+        error_count:
+          readOnly: true
+          type: integer
+        is_critical:
+          default: false
+          readOnly: true
+          type: boolean
+        syntax_type:
+          readOnly: true
+          type: integer
+        rows:
+          readOnly: true
+        column_list:
+          readOnly: true
+        status:
+          readOnly: true
+          type: string
+        affected_rows:
+          readOnly: true
+          type: integer
+      required:
+      - affected_rows
+      - checked
+      - column_list
+      - error
+      - error_count
+      - is_critical
+      - is_execute
+      - rows
+      - status
+      - syntax_type
+      - warning
+      - warning_count
+      type: object
+    ExecuteWorkflow:
+      example:
+        engineer: engineer
+        workflow_id: 0
+        workflow_type: ""
+        mode: ""
+      properties:
+        engineer:
+          title: 操作用户
+          type: string
+        workflow_id:
+          title: 工单id
+          type: integer
+        workflow_type:
+          allOf:
+          - $ref: "#/components/schemas/ExecuteWorkflowWorkflowTypeEnum"
+          title: 工单类型：1-查询权限申请，2-SQL上线申请，3-数据归档申请
+        mode:
+          allOf:
+          - $ref: "#/components/schemas/ExecuteWorkflowModeEnum"
+          title: 执行模式：auto-线上执行，manual-已手动执行
+      required:
+      - workflow_id
+      - workflow_type
+      type: object
+    ExecuteWorkflowModeEnum:
+      description: |-
+        * `auto` - auto
+        * `manual` - manual
+      enum:
+      - auto
+      - manual
+      type: string
+    ExecuteWorkflowWorkflowTypeEnum:
+      description: |-
+        * `2` - 2
+        * `3` - 3
+      enum:
+      - 2
+      - 3
+      type: integer
+    ExportFormatEnum:
+      description: |-
+        * `csv` - CSV
+        * `xlsx` - Excel
+        * `sql` - SQL
+        * `json` - JSON
+        * `xml` - XML
+      enum:
+      - csv
+      - xlsx
+      - sql
+      - json
+      - xml
+      type: string
+    Group:
+      example:
+        id: 0
+        name: name
+        permissions:
+        - 6
+        - 6
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        name:
+          maxLength: 150
+          title: 名称
+          type: string
+        permissions:
+          items:
+            title: 权限
+            type: integer
+          title: 权限
+          type: array
+      required:
+      - id
+      - name
+      type: object
+    Instance:
+      example:
+        id: 0
+        instance_name: instance_name
+        type: ""
+        db_type: ""
+        mode: standalone
+        host: host
+        port: 441289069
+        user: user
+        password: password
+        is_ssl: true
+        verify_ssl: true
+        db_name: db_name
+        show_db_name_regex: show_db_name_regex
+        denied_db_name_regex: denied_db_name_regex
+        charset: charset
+        service_name: service_name
+        sid: sid
+        create_time: 2000-01-23T04:56:07.000+00:00
+        update_time: 2000-01-23T04:56:07.000+00:00
+        tunnel: 1
+        resource_group:
+        - 5
+        - 5
+        instance_tag:
+        - 5
+        - 5
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        instance_name:
+          maxLength: 50
+          title: 实例名称
+          type: string
+        type:
+          allOf:
+          - $ref: "#/components/schemas/TypeA85Enum"
+          title: 实例类型
+        db_type:
+          allOf:
+          - $ref: "#/components/schemas/DbTypeEnum"
+          title: 数据库类型
+        mode:
+          enum:
+          - standalone
+          - cluster
+          - ""
+          title: 运行模式
+          type: string
+        host:
+          maxLength: 200
+          title: 实例连接
+          type: string
+        port:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 端口
+          type: integer
+        user:
+          maxLength: 200
+          title: 用户名
+          type: string
+        password:
+          maxLength: 300
+          title: 密码
+          type: string
+          writeOnly: true
+        is_ssl:
+          title: 是否启用SSL
+          type: boolean
+        verify_ssl:
+          title: 是否验证服务端SSL证书
+          type: boolean
+        db_name:
+          maxLength: 64
+          title: 数据库
+          type: string
+        show_db_name_regex:
+          description: "正则表达式。示例：^(test_db|dmp_db|za.*)$。Redis示例: ^(0|4|6|11|12|13)$"
+          maxLength: 1024
+          title: 显示的数据库列表正则
+          type: string
+        denied_db_name_regex:
+          description: 正则表达式。隐藏大于显示，此规则优先。
+          maxLength: 1024
+          title: 隐藏的数据库列表正则
+          type: string
+        charset:
+          maxLength: 20
+          title: 字符集
+          type: string
+        service_name:
+          maxLength: 50
+          nullable: true
+          title: Oracle service name
+          type: string
+        sid:
+          maxLength: 50
+          nullable: true
+          title: Oracle sid
+          type: string
+        create_time:
+          format: date-time
+          readOnly: true
+          title: 创建时间
+          type: string
+        update_time:
+          format: date-time
+          readOnly: true
+          title: 更新时间
+          type: string
+        tunnel:
+          nullable: true
+          title: 连接隧道
+          type: integer
+        resource_group:
+          items:
+            title: 资源组
+            type: integer
+          title: 资源组
+          type: array
+        instance_tag:
+          items:
+            title: 实例标签
+            type: integer
+          title: 实例标签
+          type: array
+      required:
+      - create_time
+      - db_type
+      - host
+      - id
+      - instance_name
+      - type
+      - update_time
+      type: object
+    InstanceDetail:
+      example:
+        id: 0
+        instance_name: instance_name
+        type: ""
+        db_type: ""
+        mode: standalone
+        host: host
+        port: 441289069
+        user: user
+        password: password
+        is_ssl: true
+        verify_ssl: true
+        db_name: db_name
+        show_db_name_regex: show_db_name_regex
+        denied_db_name_regex: denied_db_name_regex
+        charset: charset
+        service_name: service_name
+        sid: sid
+        create_time: 2000-01-23T04:56:07.000+00:00
+        update_time: 2000-01-23T04:56:07.000+00:00
+        tunnel: 1
+        resource_group:
+        - 5
+        - 5
+        instance_tag:
+        - 5
+        - 5
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        instance_name:
+          maxLength: 50
+          title: 实例名称
+          type: string
+        type:
+          allOf:
+          - $ref: "#/components/schemas/TypeA85Enum"
+          title: 实例类型
+        db_type:
+          allOf:
+          - $ref: "#/components/schemas/DbTypeEnum"
+          title: 数据库类型
+        mode:
+          enum:
+          - standalone
+          - cluster
+          - ""
+          title: 运行模式
+          type: string
+        host:
+          maxLength: 200
+          title: 实例连接
+          type: string
+        port:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 端口
+          type: integer
+        user:
+          maxLength: 200
+          title: 用户名
+          type: string
+        password:
+          maxLength: 300
+          title: 密码
+          type: string
+          writeOnly: true
+        is_ssl:
+          title: 是否启用SSL
+          type: boolean
+        verify_ssl:
+          title: 是否验证服务端SSL证书
+          type: boolean
+        db_name:
+          maxLength: 64
+          title: 数据库
+          type: string
+        show_db_name_regex:
+          description: "正则表达式。示例：^(test_db|dmp_db|za.*)$。Redis示例: ^(0|4|6|11|12|13)$"
+          maxLength: 1024
+          title: 显示的数据库列表正则
+          type: string
+        denied_db_name_regex:
+          description: 正则表达式。隐藏大于显示，此规则优先。
+          maxLength: 1024
+          title: 隐藏的数据库列表正则
+          type: string
+        charset:
+          maxLength: 20
+          title: 字符集
+          type: string
+        service_name:
+          maxLength: 50
+          nullable: true
+          title: Oracle service name
+          type: string
+        sid:
+          maxLength: 50
+          nullable: true
+          title: Oracle sid
+          type: string
+        create_time:
+          format: date-time
+          readOnly: true
+          title: 创建时间
+          type: string
+        update_time:
+          format: date-time
+          readOnly: true
+          title: 更新时间
+          type: string
+        tunnel:
+          nullable: true
+          title: 连接隧道
+          type: integer
+        resource_group:
+          items:
+            title: 资源组
+            type: integer
+          title: 资源组
+          type: array
+        instance_tag:
+          items:
+            title: 实例标签
+            type: integer
+          title: 实例标签
+          type: array
+      required:
+      - create_time
+      - id
+      - update_time
+      type: object
+    InstanceResource:
+      example:
+        instance_id: 0
+        resource_type: ""
+        db_name: db_name
+        schema_name: schema_name
+        tb_name: tb_name
+      properties:
+        instance_id:
+          title: 实例id
+          type: integer
+        resource_type:
+          allOf:
+          - $ref: "#/components/schemas/ResourceTypeEnum"
+          title: 资源类型
+        db_name:
+          title: 数据库名
+          type: string
+        schema_name:
+          title: schema名
+          type: string
+        tb_name:
+          title: 表名
+          type: string
+      required:
+      - instance_id
+      - resource_type
+      type: object
+    InstanceResourceList:
+      example:
+        count: 0
+        result:
+        - ""
+        - ""
+      properties:
+        count:
+          type: integer
+        result:
+          items: {}
+          type: array
+      required:
+      - count
+      - result
+      type: object
+    IsBackupEnum:
+      description: |-
+        * `False` - 否
+        * `True` - 是
+      type: boolean
+    IsOfflineExportEnum:
+      description: |-
+        * `0` - 否
+        * `1` - 是
+      enum:
+      - 0
+      - 1
+      type: integer
+    LocatorExecutionSummary:
+      properties:
+        processed_instance_count:
+          type: integer
+        successful_instance_count:
+          type: integer
+        failed_instance_count:
+          type: integer
+        failure_reasons:
+          items:
+            $ref: "#/components/schemas/LocatorFailureReason"
+          type: array
+      required:
+      - failed_instance_count
+      - failure_reasons
+      - processed_instance_count
+      - successful_instance_count
+      type: object
+    LocatorFailureReason:
+      properties:
+        instance_name:
+          type: string
+        reason:
+          type: string
+      required:
+      - instance_name
+      - reason
+      type: object
+    ModeDf2Enum:
+      description: |-
+        * `standalone` - 单机
+        * `cluster` - 集群
+      enum:
+      - standalone
+      - cluster
+      type: string
+    NullEnum:
+      enum:
+      - null
+      type: string
+    PaginatedAliyunRdsList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          rds_dbinstanceid: rds_dbinstanceid
+          is_enable: true
+          instance: 6
+          ak:
+            id: 1
+            type: aliyun
+            key_id: key_id
+            key_secret: key_secret
+            remark: remark
+        - id: 0
+          rds_dbinstanceid: rds_dbinstanceid
+          is_enable: true
+          instance: 6
+          ak:
+            id: 1
+            type: aliyun
+            key_id: key_id
+            key_secret: key_secret
+            remark: remark
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/AliyunRds"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedGroupList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          name: name
+          permissions:
+          - 6
+          - 6
+        - id: 0
+          name: name
+          permissions:
+          - 6
+          - 6
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/Group"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedInstanceList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          instance_name: instance_name
+          type: ""
+          db_type: ""
+          mode: standalone
+          host: host
+          port: 441289069
+          user: user
+          password: password
+          is_ssl: true
+          verify_ssl: true
+          db_name: db_name
+          show_db_name_regex: show_db_name_regex
+          denied_db_name_regex: denied_db_name_regex
+          charset: charset
+          service_name: service_name
+          sid: sid
+          create_time: 2000-01-23T04:56:07.000+00:00
+          update_time: 2000-01-23T04:56:07.000+00:00
+          tunnel: 1
+          resource_group:
+          - 5
+          - 5
+          instance_tag:
+          - 5
+          - 5
+        - id: 0
+          instance_name: instance_name
+          type: ""
+          db_type: ""
+          mode: standalone
+          host: host
+          port: 441289069
+          user: user
+          password: password
+          is_ssl: true
+          verify_ssl: true
+          db_name: db_name
+          show_db_name_regex: show_db_name_regex
+          denied_db_name_regex: denied_db_name_regex
+          charset: charset
+          service_name: service_name
+          sid: sid
+          create_time: 2000-01-23T04:56:07.000+00:00
+          update_time: 2000-01-23T04:56:07.000+00:00
+          tunnel: 1
+          resource_group:
+          - 5
+          - 5
+          instance_tag:
+          - 5
+          - 5
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/Instance"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedResourceGroupList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - group_id: 0
+          group_name: group_name
+          group_parent_id: 1895322125605019648
+          group_sort: -1517921766
+          group_level: 413233370
+          ding_webhook: ding_webhook
+          feishu_webhook: feishu_webhook
+          qywx_webhook: qywx_webhook
+          is_deleted: ""
+          create_time: 2000-01-23T04:56:07.000+00:00
+          sys_time: 2000-01-23T04:56:07.000+00:00
+        - group_id: 0
+          group_name: group_name
+          group_parent_id: 1895322125605019648
+          group_sort: -1517921766
+          group_level: 413233370
+          ding_webhook: ding_webhook
+          feishu_webhook: feishu_webhook
+          qywx_webhook: qywx_webhook
+          is_deleted: ""
+          create_time: 2000-01-23T04:56:07.000+00:00
+          sys_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/ResourceGroup"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedTunnelList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          tunnel_name: tunnel_name
+          host: host
+          port: 441289069
+          user: user
+          password: password
+          pkey: pkey
+          pkey_path: https://openapi-generator.tech
+          pkey_password: pkey_password
+          create_time: 2000-01-23T04:56:07.000+00:00
+          update_time: 2000-01-23T04:56:07.000+00:00
+        - id: 0
+          tunnel_name: tunnel_name
+          host: host
+          port: 441289069
+          user: user
+          password: password
+          pkey: pkey
+          pkey_path: https://openapi-generator.tech
+          pkey_password: pkey_password
+          create_time: 2000-01-23T04:56:07.000+00:00
+          update_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/Tunnel"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedUserList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          password: password
+          last_login: 2000-01-23T04:56:07.000+00:00
+          is_superuser: true
+          username: username
+          first_name: first_name
+          last_name: last_name
+          email: email
+          is_staff: true
+          is_active: true
+          date_joined: 2000-01-23T04:56:07.000+00:00
+          display: display
+          ding_user_id: ding_user_id
+          wx_user_id: wx_user_id
+          feishu_open_id: feishu_open_id
+          failed_login_count: 441289069
+          last_login_failed_at: 2000-01-23T04:56:07.000+00:00
+          groups:
+          - 1
+          - 1
+          user_permissions:
+          - 5
+          - 5
+          resource_group:
+          - 5
+          - 5
+        - id: 0
+          password: password
+          last_login: 2000-01-23T04:56:07.000+00:00
+          is_superuser: true
+          username: username
+          first_name: first_name
+          last_name: last_name
+          email: email
+          is_staff: true
+          is_active: true
+          date_joined: 2000-01-23T04:56:07.000+00:00
+          display: display
+          ding_user_id: ding_user_id
+          wx_user_id: wx_user_id
+          feishu_open_id: feishu_open_id
+          failed_login_count: 441289069
+          last_login_failed_at: 2000-01-23T04:56:07.000+00:00
+          groups:
+          - 1
+          - 1
+          user_permissions:
+          - 5
+          - 5
+          resource_group:
+          - 5
+          - 5
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/User"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    PaginatedWorkflowContentList:
+      example:
+        count: 123
+        next: http://api.example.org/accounts/?page=4
+        previous: http://api.example.org/accounts/?page=2
+        results:
+        - id: 0
+          workflow_id: 6
+          workflow:
+            id: 1
+            workflow_name: workflow_name
+            demand_url: demand_url
+            group_id: 413233370
+            group_name: group_name
+            db_name: db_name
+            syntax_type: ""
+            is_backup: ""
+            engineer: engineer
+            engineer_display: engineer_display
+            status: ""
+            audit_auth_groups: audit_auth_groups
+            run_date_start: 2000-01-23T04:56:07.000+00:00
+            run_date_end: 2000-01-23T04:56:07.000+00:00
+            create_time: 2000-01-23T04:56:07.000+00:00
+            finish_time: 2000-01-23T04:56:07.000+00:00
+            is_manual: ""
+            is_offline_export: ""
+            export_format: csv
+            file_name: file_name
+            instance: 5
+          sql_content: sql_content
+          review_content: review_content
+          execute_result: execute_result
+        - id: 0
+          workflow_id: 6
+          workflow:
+            id: 1
+            workflow_name: workflow_name
+            demand_url: demand_url
+            group_id: 413233370
+            group_name: group_name
+            db_name: db_name
+            syntax_type: ""
+            is_backup: ""
+            engineer: engineer
+            engineer_display: engineer_display
+            status: ""
+            audit_auth_groups: audit_auth_groups
+            run_date_start: 2000-01-23T04:56:07.000+00:00
+            run_date_end: 2000-01-23T04:56:07.000+00:00
+            create_time: 2000-01-23T04:56:07.000+00:00
+            finish_time: 2000-01-23T04:56:07.000+00:00
+            is_manual: ""
+            is_offline_export: ""
+            export_format: csv
+            file_name: file_name
+            instance: 5
+          sql_content: sql_content
+          review_content: review_content
+          execute_result: execute_result
+      properties:
+        count:
+          example: 123
+          type: integer
+        next:
+          example: http://api.example.org/accounts/?page=4
+          format: uri
+          nullable: true
+          type: string
+        previous:
+          example: http://api.example.org/accounts/?page=2
+          format: uri
+          nullable: true
+          type: string
+        results:
+          items:
+            $ref: "#/components/schemas/WorkflowContent"
+          type: array
+      required:
+      - count
+      - results
+      type: object
+    ResourceGroup:
+      example:
+        group_id: 0
+        group_name: group_name
+        group_parent_id: 1895322125605019648
+        group_sort: -1517921766
+        group_level: 413233370
+        ding_webhook: ding_webhook
+        feishu_webhook: feishu_webhook
+        qywx_webhook: qywx_webhook
+        is_deleted: ""
+        create_time: 2000-01-23T04:56:07.000+00:00
+        sys_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        group_id:
+          readOnly: true
+          title: 组ID
+          type: integer
+        group_name:
+          maxLength: 100
+          title: 组名称
+          type: string
+        group_parent_id:
+          format: int64
+          maximum: 9223372036854775807
+          minimum: -9223372036854775808
+          title: 父级id
+          type: integer
+        group_sort:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 排序
+          type: integer
+        group_level:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 层级
+          type: integer
+        ding_webhook:
+          maxLength: 255
+          title: 钉钉webhook地址
+          type: string
+        feishu_webhook:
+          maxLength: 255
+          title: 飞书webhook地址
+          type: string
+        qywx_webhook:
+          maxLength: 255
+          title: 企业微信webhook地址
+          type: string
+        is_deleted:
+          allOf:
+          - $ref: "#/components/schemas/IsOfflineExportEnum"
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 是否删除
+        create_time:
+          format: date-time
+          readOnly: true
+          type: string
+        sys_time:
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - create_time
+      - group_id
+      - group_name
+      - sys_time
+      type: object
+    ResourceTypeEnum:
+      description: |-
+        * `database` - database
+        * `schema` - schema
+        * `table` - table
+        * `column` - column
+      enum:
+      - database
+      - schema
+      - table
+      - column
+      type: string
+    StatusEnum:
+      description: |-
+        * `workflow_finish` - 已正常结束
+        * `workflow_abort` - 人工终止流程
+        * `workflow_manreviewing` - 等待审核人审核
+        * `workflow_review_pass` - 审核通过
+        * `workflow_timingtask` - 定时执行
+        * `workflow_queuing` - 排队中
+        * `workflow_executing` - 执行中
+        * `workflow_autoreviewwrong` - 自动审核不通过
+        * `workflow_exception` - 执行有异常
+      enum:
+      - workflow_finish
+      - workflow_abort
+      - workflow_manreviewing
+      - workflow_review_pass
+      - workflow_timingtask
+      - workflow_queuing
+      - workflow_executing
+      - workflow_autoreviewwrong
+      - workflow_exception
+      type: string
+    SyntaxTypeEnum:
+      description: |-
+        * `0` - 其他
+        * `1` - DDL
+        * `2` - DML
+        * `3` - 离线导出工单
+      enum:
+      - 0
+      - 1
+      - 2
+      - 3
+      type: integer
+    TableInstance:
+      example:
+        id: 1
+        name: name
+        db_type: db_type
+        db_name: db_name
+        table_name: table_name
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        db_type:
+          type: string
+        db_name:
+          type: string
+        table_name:
+          nullable: true
+          type: string
+      required:
+      - db_name
+      - db_type
+      - id
+      - name
+      type: object
+    TableInstanceLookup:
+      example:
+        table_name: table_name
+      properties:
+        table_name:
+          maxLength: 256
+          title: 表名
+          type: string
+      required:
+      - table_name
+      type: object
+    TableInstanceLookupResponse:
+      example:
+        status: 0
+        msg: msg
+        count: 6
+        data:
+        - id: 1
+          name: name
+          db_type: db_type
+          db_name: db_name
+          table_name: table_name
+        - id: 1
+          name: name
+          db_type: db_type
+          db_name: db_name
+          table_name: table_name
+        summary: ""
+      properties:
+        status:
+          type: integer
+        msg:
+          type: string
+        count:
+          type: integer
+        data:
+          items:
+            $ref: "#/components/schemas/TableInstance"
+          type: array
+        summary:
+          allOf:
+          - $ref: "#/components/schemas/LocatorExecutionSummary"
+          nullable: true
+      required:
+      - count
+      - data
+      - msg
+      - status
+      type: object
+    TokenObtainPair:
+      example:
+        username: username
+        password: password
+        access: access
+        refresh: refresh
+      properties:
+        username:
+          type: string
+          writeOnly: true
+        password:
+          type: string
+          writeOnly: true
+        access:
+          readOnly: true
+          type: string
+        refresh:
+          readOnly: true
+          type: string
+      required:
+      - access
+      - password
+      - refresh
+      - username
+      type: object
+    TokenRefresh:
+      example:
+        access: access
+        refresh: refresh
+      properties:
+        access:
+          readOnly: true
+          type: string
+        refresh:
+          type: string
+          writeOnly: true
+      required:
+      - access
+      - refresh
+      type: object
+    TokenVerify:
+      example:
+        token: token
+      properties:
+        token:
+          type: string
+          writeOnly: true
+      required:
+      - token
+      type: object
+    Tunnel:
+      example:
+        id: 0
+        tunnel_name: tunnel_name
+        host: host
+        port: 441289069
+        user: user
+        password: password
+        pkey: pkey
+        pkey_path: https://openapi-generator.tech
+        pkey_password: pkey_password
+        create_time: 2000-01-23T04:56:07.000+00:00
+        update_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        tunnel_name:
+          maxLength: 50
+          title: 隧道名称
+          type: string
+        host:
+          maxLength: 200
+          title: 隧道连接
+          type: string
+        port:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 端口
+          type: integer
+        user:
+          maxLength: 200
+          nullable: true
+          title: 用户名
+          type: string
+        password:
+          maxLength: 300
+          nullable: true
+          title: 密码
+          type: string
+        pkey:
+          nullable: true
+          title: 密钥
+          type: string
+        pkey_path:
+          format: uri
+          nullable: true
+          title: 密钥地址
+          type: string
+        pkey_password:
+          maxLength: 300
+          nullable: true
+          title: 密钥密码
+          type: string
+        create_time:
+          format: date-time
+          readOnly: true
+          title: 创建时间
+          type: string
+        update_time:
+          format: date-time
+          readOnly: true
+          title: 更新时间
+          type: string
+      required:
+      - create_time
+      - host
+      - id
+      - tunnel_name
+      - update_time
+      type: object
+    TwoFA:
+      example:
+        engineer: engineer
+        enable: ""
+        phone: phone
+        auth_type: ""
+      properties:
+        engineer:
+          title: 用户名
+          type: string
+        enable:
+          allOf:
+          - $ref: "#/components/schemas/EnableEnum"
+          title: 启用or禁用
+        phone:
+          title: 手机号码
+          type: string
+        auth_type:
+          allOf:
+          - $ref: "#/components/schemas/TwoFAAuthTypeEnum"
+          title: 验证类型：totp-Google身份验证器，sms-短信验证码
+      required:
+      - auth_type
+      - enable
+      - engineer
+      type: object
+    TwoFAAuthTypeEnum:
+      description: |-
+        * `totp` - totp
+        * `sms` - sms
+      enum:
+      - totp
+      - sms
+      type: string
+    TwoFASave:
+      example:
+        engineer: engineer
+        key: key
+        phone: phone
+        auth_type: ""
+      properties:
+        engineer:
+          title: 用户名
+          type: string
+        key:
+          title: 密钥
+          type: string
+        phone:
+          title: 手机号码
+          type: string
+        auth_type:
+          allOf:
+          - $ref: "#/components/schemas/TwoFASaveAuthTypeEnum"
+          title: 验证类型：disabled-关闭，totp-Google身份验证器，sms-短信验证码
+      required:
+      - auth_type
+      - engineer
+      type: object
+    TwoFASaveAuthTypeEnum:
+      description: |-
+        * `disabled` - disabled
+        * `totp` - totp
+        * `sms` - sms
+      enum:
+      - disabled
+      - totp
+      - sms
+      type: string
+    TwoFAState:
+      example:
+        engineer: engineer
+      properties:
+        engineer:
+          title: 用户名
+          type: string
+      required:
+      - engineer
+      type: object
+    TwoFAVerify:
+      example:
+        engineer: engineer
+        otp: 0
+        key: key
+        phone: phone
+        auth_type: auth_type
+      properties:
+        engineer:
+          title: 用户名
+          type: string
+        otp:
+          title: 一次性密码/验证码
+          type: integer
+        key:
+          title: 密钥
+          type: string
+        phone:
+          title: 手机号码
+          type: string
+        auth_type:
+          title: 验证方式
+          type: string
+      required:
+      - auth_type
+      - engineer
+      - otp
+      type: object
+    TypeA85Enum:
+      description: |-
+        * `master` - 主库
+        * `slave` - 从库
+      enum:
+      - master
+      - slave
+      type: string
+    User:
+      example:
+        id: 0
+        password: password
+        last_login: 2000-01-23T04:56:07.000+00:00
+        is_superuser: true
+        username: username
+        first_name: first_name
+        last_name: last_name
+        email: email
+        is_staff: true
+        is_active: true
+        date_joined: 2000-01-23T04:56:07.000+00:00
+        display: display
+        ding_user_id: ding_user_id
+        wx_user_id: wx_user_id
+        feishu_open_id: feishu_open_id
+        failed_login_count: 441289069
+        last_login_failed_at: 2000-01-23T04:56:07.000+00:00
+        groups:
+        - 1
+        - 1
+        user_permissions:
+        - 5
+        - 5
+        resource_group:
+        - 5
+        - 5
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        password:
+          maxLength: 128
+          title: 密码
+          type: string
+          writeOnly: true
+        last_login:
+          format: date-time
+          nullable: true
+          title: 上次登录
+          type: string
+        is_superuser:
+          description: 指明该用户缺省拥有所有权限。
+          title: 超级用户状态
+          type: boolean
+        username:
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          maxLength: 150
+          pattern: "^[\\w.@+-]+$"
+          title: 用户名
+          type: string
+        first_name:
+          maxLength: 150
+          title: 名字
+          type: string
+        last_name:
+          maxLength: 150
+          title: 姓氏
+          type: string
+        email:
+          format: email
+          maxLength: 254
+          title: 电子邮件地址
+          type: string
+        is_staff:
+          description: 指明用户是否可以登录到这个管理站点。
+          title: 工作人员状态
+          type: boolean
+        is_active:
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+          title: 有效
+          type: boolean
+        date_joined:
+          format: date-time
+          title: 加入日期
+          type: string
+        display:
+          maxLength: 50
+          title: 显示的中文名
+          type: string
+        ding_user_id:
+          maxLength: 64
+          title: 钉钉UserID
+          type: string
+        wx_user_id:
+          maxLength: 64
+          title: 企业微信UserID
+          type: string
+        feishu_open_id:
+          maxLength: 64
+          title: 飞书OpenID
+          type: string
+        failed_login_count:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 失败计数
+          type: integer
+        last_login_failed_at:
+          format: date-time
+          nullable: true
+          title: 上次失败登录时间
+          type: string
+        groups:
+          description: 该用户归属的组。一个用户将得到其归属的组的所有权限。
+          items:
+            title: 组
+            type: integer
+          title: 组
+          type: array
+        user_permissions:
+          description: 这个用户的特定权限。
+          items:
+            title: 用户权限
+            type: integer
+          title: 用户权限
+          type: array
+        resource_group:
+          items:
+            title: 资源组
+            type: integer
+          title: 资源组
+          type: array
+      required:
+      - display
+      - id
+      - password
+      - username
+      type: object
+    UserAuth:
+      example:
+        engineer: engineer
+        password: password
+      properties:
+        engineer:
+          title: 用户名
+          type: string
+        password:
+          title: 密码
+          type: string
+      required:
+      - engineer
+      - password
+      type: object
+    UserDetail:
+      example:
+        id: 0
+        password: password
+        last_login: 2000-01-23T04:56:07.000+00:00
+        is_superuser: true
+        username: username
+        first_name: first_name
+        last_name: last_name
+        email: email
+        is_staff: true
+        is_active: true
+        date_joined: 2000-01-23T04:56:07.000+00:00
+        display: display
+        ding_user_id: ding_user_id
+        wx_user_id: wx_user_id
+        feishu_open_id: feishu_open_id
+        failed_login_count: 441289069
+        last_login_failed_at: 2000-01-23T04:56:07.000+00:00
+        groups:
+        - 1
+        - 1
+        user_permissions:
+        - 5
+        - 5
+        resource_group:
+        - 5
+        - 5
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        password:
+          maxLength: 128
+          title: 密码
+          type: string
+          writeOnly: true
+        last_login:
+          format: date-time
+          nullable: true
+          title: 上次登录
+          type: string
+        is_superuser:
+          description: 指明该用户缺省拥有所有权限。
+          title: 超级用户状态
+          type: boolean
+        username:
+          description: 必填；长度为150个字符或以下；只能包含字母、数字、特殊字符“@”、“.”、“-”和“_”。
+          maxLength: 150
+          pattern: "^[\\w.@+-]+$"
+          title: 用户名
+          type: string
+        first_name:
+          maxLength: 150
+          title: 名字
+          type: string
+        last_name:
+          maxLength: 150
+          title: 姓氏
+          type: string
+        email:
+          format: email
+          maxLength: 254
+          title: 电子邮件地址
+          type: string
+        is_staff:
+          description: 指明用户是否可以登录到这个管理站点。
+          title: 工作人员状态
+          type: boolean
+        is_active:
+          description: 指明用户是否被认为是活跃的。以反选代替删除帐号。
+          title: 有效
+          type: boolean
+        date_joined:
+          format: date-time
+          title: 加入日期
+          type: string
+        display:
+          maxLength: 50
+          title: 显示的中文名
+          type: string
+        ding_user_id:
+          maxLength: 64
+          title: 钉钉UserID
+          type: string
+        wx_user_id:
+          maxLength: 64
+          title: 企业微信UserID
+          type: string
+        feishu_open_id:
+          maxLength: 64
+          title: 飞书OpenID
+          type: string
+        failed_login_count:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 失败计数
+          type: integer
+        last_login_failed_at:
+          format: date-time
+          nullable: true
+          title: 上次失败登录时间
+          type: string
+        groups:
+          description: 该用户归属的组。一个用户将得到其归属的组的所有权限。
+          items:
+            title: 组
+            type: integer
+          title: 组
+          type: array
+        user_permissions:
+          description: 这个用户的特定权限。
+          items:
+            title: 用户权限
+            type: integer
+          title: 用户权限
+          type: array
+        resource_group:
+          items:
+            title: 资源组
+            type: integer
+          title: 资源组
+          type: array
+      required:
+      - id
+      type: object
+    Workflow:
+      example:
+        id: 1
+        workflow_name: workflow_name
+        demand_url: demand_url
+        group_id: 413233370
+        group_name: group_name
+        db_name: db_name
+        syntax_type: ""
+        is_backup: ""
+        engineer: engineer
+        engineer_display: engineer_display
+        status: ""
+        audit_auth_groups: audit_auth_groups
+        run_date_start: 2000-01-23T04:56:07.000+00:00
+        run_date_end: 2000-01-23T04:56:07.000+00:00
+        create_time: 2000-01-23T04:56:07.000+00:00
+        finish_time: 2000-01-23T04:56:07.000+00:00
+        is_manual: ""
+        is_offline_export: ""
+        export_format: csv
+        file_name: file_name
+        instance: 5
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        workflow_name:
+          maxLength: 50
+          title: 工单内容
+          type: string
+        demand_url:
+          maxLength: 500
+          title: 需求链接
+          type: string
+        group_id:
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 组ID
+          type: integer
+        group_name:
+          readOnly: true
+          title: 组名称
+          type: string
+        db_name:
+          maxLength: 64
+          title: 数据库
+          type: string
+        syntax_type:
+          allOf:
+          - $ref: "#/components/schemas/SyntaxTypeEnum"
+          readOnly: true
+          title: 工单类型 0、未知，1、DDL，2、DML，3、离线导出工单
+        is_backup:
+          allOf:
+          - $ref: "#/components/schemas/IsBackupEnum"
+          title: 是否备份
+        engineer:
+          maxLength: 30
+          title: 发起人
+          type: string
+        engineer_display:
+          readOnly: true
+          title: 发起人中文名
+          type: string
+        status:
+          allOf:
+          - $ref: "#/components/schemas/StatusEnum"
+          readOnly: true
+        audit_auth_groups:
+          readOnly: true
+          title: 审批权限组列表
+          type: string
+        run_date_start:
+          format: date-time
+          nullable: true
+          title: 可执行起始时间
+          type: string
+        run_date_end:
+          format: date-time
+          nullable: true
+          title: 可执行结束时间
+          type: string
+        create_time:
+          format: date-time
+          readOnly: true
+          title: 创建时间
+          type: string
+        finish_time:
+          format: date-time
+          nullable: true
+          readOnly: true
+          title: 结束时间
+          type: string
+        is_manual:
+          allOf:
+          - $ref: "#/components/schemas/IsOfflineExportEnum"
+          readOnly: true
+          title: 是否原生执行
+        is_offline_export:
+          allOf:
+          - $ref: "#/components/schemas/IsOfflineExportEnum"
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 是否为离线导出工单
+        export_format:
+          enum:
+          - csv
+          - xlsx
+          - sql
+          - json
+          - xml
+          - ""
+          - null
+          nullable: true
+          title: 导出格式
+          type: string
+        file_name:
+          maxLength: 255
+          nullable: true
+          title: 文件名
+          type: string
+        instance:
+          type: integer
+      required:
+      - audit_auth_groups
+      - create_time
+      - db_name
+      - engineer_display
+      - finish_time
+      - group_id
+      - group_name
+      - id
+      - instance
+      - is_manual
+      - status
+      - syntax_type
+      - workflow_name
+      type: object
+    WorkflowAudit:
+      example:
+        engineer: engineer
+      properties:
+        engineer:
+          title: 操作用户
+          type: string
+      required:
+      - engineer
+      type: object
+    WorkflowAuditList:
+      example:
+        audit_id: 0
+        group_name: group_name
+        workflow_type: ""
+        workflow_title: workflow_title
+        audit_auth_groups: audit_auth_groups
+        current_audit: current_audit
+        current_status: ""
+        create_user_display: create_user_display
+        create_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        audit_id:
+          readOnly: true
+          type: integer
+        group_name:
+          maxLength: 100
+          title: 组名称
+          type: string
+        workflow_type:
+          allOf:
+          - $ref: "#/components/schemas/WorkflowTypeA27Enum"
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 申请类型
+        workflow_title:
+          maxLength: 50
+          title: 申请标题
+          type: string
+        audit_auth_groups:
+          maxLength: 255
+          title: 审批权限组列表
+          type: string
+        current_audit:
+          maxLength: 20
+          title: 当前审批权限组
+          type: string
+        current_status:
+          allOf:
+          - $ref: "#/components/schemas/CurrentStatusEnum"
+          maximum: 2147483647
+          minimum: -2147483648
+          title: 审核状态
+        create_user_display:
+          maxLength: 50
+          title: 申请人中文名
+          type: string
+        create_time:
+          format: date-time
+          readOnly: true
+          title: 申请时间
+          type: string
+      required:
+      - audit_auth_groups
+      - audit_id
+      - create_time
+      - current_audit
+      - current_status
+      - group_name
+      - workflow_title
+      - workflow_type
+      type: object
+    WorkflowContent:
+      example:
+        id: 0
+        workflow_id: 6
+        workflow:
+          id: 1
+          workflow_name: workflow_name
+          demand_url: demand_url
+          group_id: 413233370
+          group_name: group_name
+          db_name: db_name
+          syntax_type: ""
+          is_backup: ""
+          engineer: engineer
+          engineer_display: engineer_display
+          status: ""
+          audit_auth_groups: audit_auth_groups
+          run_date_start: 2000-01-23T04:56:07.000+00:00
+          run_date_end: 2000-01-23T04:56:07.000+00:00
+          create_time: 2000-01-23T04:56:07.000+00:00
+          finish_time: 2000-01-23T04:56:07.000+00:00
+          is_manual: ""
+          is_offline_export: ""
+          export_format: csv
+          file_name: file_name
+          instance: 5
+        sql_content: sql_content
+        review_content: review_content
+        execute_result: execute_result
+      properties:
+        id:
+          readOnly: true
+          type: integer
+        workflow_id:
+          readOnly: true
+          type: integer
+        workflow:
+          $ref: "#/components/schemas/Workflow"
+        sql_content:
+          title: 具体sql内容
+          type: string
+        review_content:
+          readOnly: true
+          title: 自动审核内容的JSON格式
+          type: string
+        execute_result:
+          readOnly: true
+          title: 执行结果的JSON格式
+          type: string
+      required:
+      - execute_result
+      - id
+      - review_content
+      - sql_content
+      - workflow
+      - workflow_id
+      type: object
+    WorkflowLog:
+      example:
+        workflow_id: 0
+        workflow_type: ""
+      properties:
+        workflow_id:
+          title: 工单id
+          type: integer
+        workflow_type:
+          allOf:
+          - $ref: "#/components/schemas/WorkflowLogWorkflowTypeEnum"
+          title: 工单类型：1-查询权限申请，2-SQL上线申请，3-数据归档申请
+      required:
+      - workflow_id
+      - workflow_type
+      type: object
+    WorkflowLogList:
+      example:
+        operation_type_desc: operation_type_desc
+        operation_info: operation_info
+        operator_display: operator_display
+        operation_time: 2000-01-23T04:56:07.000+00:00
+      properties:
+        operation_type_desc:
+          maxLength: 10
+          title: 操作类型描述
+          type: string
+        operation_info:
+          maxLength: 1000
+          title: 操作信息
+          type: string
+        operator_display:
+          maxLength: 50
+          title: 操作人中文名
+          type: string
+        operation_time:
+          format: date-time
+          readOnly: true
+          type: string
+      required:
+      - operation_info
+      - operation_time
+      - operation_type_desc
+      type: object
+    WorkflowLogWorkflowTypeEnum:
+      description: |-
+        * `1` - 1
+        * `2` - 2
+        * `3` - 3
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+    WorkflowTypeA27Enum:
+      description: |-
+        * `1` - 查询权限申请
+        * `2` - SQL上线申请
+        * `3` - 数据归档申请
+      enum:
+      - 1
+      - 2
+      - 3
+      type: integer
+  securitySchemes:
+    cookieAuth:
+      in: cookie
+      name: sessionid
+      type: apiKey
+    jwtAuth:
+      bearerFormat: JWT
+      scheme: bearer
+      type: http
+    knoxApiToken:
+      description: Token-based authentication with required prefix "Token"
+      in: header
+      name: Authorization
+      type: apiKey

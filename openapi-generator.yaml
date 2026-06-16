@@ -1,0 +1,9 @@
+outputDir: openapi
+inputSpec: archery_api.yaml
+generatorName: go
+gitHost: github.intra.douban.com
+gitUserId: sa
+gitRepoId: archery-cli
+enumClassPrefix: true
+additionalProperties:
+  isGoSubmodule: false
