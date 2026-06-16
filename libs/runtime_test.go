@@ -64,19 +64,16 @@ func TestLookupTableInstances(t *testing.T) {
 	defer server.Close()
 
 	rt := newTestRuntime(t, server.URL, token)
-	result, err := rt.LookupTableInstances(nil, " users ")
+	result, err := rt.LookupTableInstances(" users ")
 	if err != nil {
 		t.Fatalf("LookupTableInstances returned error: %v", err)
 	}
 
-	if result.Response.GetStatus() != 0 {
-		t.Fatalf("unexpected status: %d", result.Response.GetStatus())
+	if result.GetStatus() != 0 {
+		t.Fatalf("unexpected status: %d", result.GetStatus())
 	}
-	if len(result.Response.GetData()) != 1 {
-		t.Fatalf("unexpected data length: %d", len(result.Response.GetData()))
-	}
-	if !strings.Contains(string(result.RawBody), `"count":1`) {
-		t.Fatalf("raw body was not returned correctly: %s", string(result.RawBody))
+	if len(result.GetData()) != 1 {
+		t.Fatalf("unexpected data length: %d", len(result.GetData()))
 	}
 }
 
@@ -112,7 +109,7 @@ func TestDescribeTableStructure(t *testing.T) {
 	defer server.Close()
 
 	rt := newTestRuntime(t, server.URL, token)
-	result, err := rt.DescribeTableStructure(nil, "ins-a", "archery", "users", "")
+	result, err := rt.DescribeTableStructure("ins-a", "archery", "users", "")
 	if err != nil {
 		t.Fatalf("DescribeTableStructure returned error: %v", err)
 	}
@@ -163,7 +160,7 @@ func TestExecuteQuery(t *testing.T) {
 	defer server.Close()
 
 	rt := newTestRuntime(t, server.URL, token)
-	result, err := rt.ExecuteQuery(nil, "ins-a", "archery", "", "", "select 1", 100)
+	result, err := rt.ExecuteQuery("ins-a", "archery", "", "", "select 1", 100)
 	if err != nil {
 		t.Fatalf("ExecuteQuery returned error: %v", err)
 	}

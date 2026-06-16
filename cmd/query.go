@@ -48,7 +48,6 @@ var queryCmd = &cobra.Command{
 		}
 
 		result, err := runtime.ExecuteQuery(
-			cmd.Context(),
 			instance,
 			queryDatabase,
 			querySchema,
@@ -63,15 +62,15 @@ var queryCmd = &cobra.Command{
 		envelope := result.Envelope
 
 		printDebugRequestResponse("query", map[string]any{
-			"base_url":    runtime.Config.BaseURL,
-			"api_token":   "***",
-			"instance":    instance,
-			"database":    queryDatabase,
-			"schema":      querySchema,
-			"table":       queryTable,
-			"statement":   statement,
-			"limit_num":   queryLimitNum,
-			"output":      outputFormat,
+			"base_url":  runtime.Config.BaseURL,
+			"api_token": "***",
+			"instance":  instance,
+			"database":  queryDatabase,
+			"schema":    querySchema,
+			"table":     queryTable,
+			"statement": statement,
+			"limit_num": queryLimitNum,
+			"output":    outputFormat,
 		}, map[string]any{
 			"envelope": envelope,
 			"raw":      string(result.RawBody),

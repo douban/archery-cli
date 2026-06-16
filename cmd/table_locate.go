@@ -20,18 +20,17 @@ var tableLocateCmd = &cobra.Command{
 		}
 
 		tableName := strings.TrimSpace(args[0])
-		result, err := runtime.LookupTableInstances(cmd.Context(), tableName)
+		response, err := runtime.LookupTableInstances(tableName)
 		if err != nil {
 			printDebugRequestResponse("table locate", map[string]any{
 				"base_url":  runtime.Config.BaseURL,
-				"api_token": runtime.Config.APIToken,
+				"api_token": "***",
 				"table":     tableName,
 			}, map[string]any{
 				"error": err.Error(),
 			})
 			return err
 		}
-		response := result.Response
 
 		rows := make([][]string, 0, len(response.Data))
 		for _, item := range response.Data {
@@ -52,7 +51,6 @@ var tableLocateCmd = &cobra.Command{
 				"table":     tableName,
 			}, map[string]any{
 				"response": response,
-				"raw":      string(result.RawBody),
 			})
 		}
 

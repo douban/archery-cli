@@ -40,16 +40,6 @@ type Runtime struct {
 	Context    context.Context
 }
 
-func (r *Runtime) effectiveContext(ctx context.Context) context.Context {
-	if ctx != nil {
-		return ctx
-	}
-	if r != nil && r.Context != nil {
-		return r.Context
-	}
-	return context.Background()
-}
-
 func LoadRuntime(configPath string) (*Runtime, error) {
 	resolvedPath, err := ResolveConfigPath(configPath)
 	if err != nil {
@@ -80,37 +70,20 @@ func LoadRuntime(configPath string) (*Runtime, error) {
 	}, nil
 }
 
-func (r *Runtime) LookupTableInstances(ctx context.Context, tableName string) (*TableLookupResult, error) {
+func (r *Runtime) LookupTableInstances(tableName string) (*openapi.TableInstanceLookupResponse, error) {
 	if r == nil {
 		return nil, fmt.Errorf("runtime is nil")
 	}
 
-	ctx = r.effectiveContext(ctx)
 	request := openapi.TableInstanceLookup{TableName: strings.TrimSpace(tableName)}
-	response, rawResponse, err := r.Client.ApiAPI.ApiV1InstanceTableInstancesCreate(ctx).TableInstanceLookup(request).Execute()
+	response, _, err := r.Client.ApiAPI.ApiV1InstanceTableInstancesCreate(r.Context).TableInstanceLookup(request).Execute()
 	if err != nil {
 		return nil, err
 	}
-	if rawResponse == nil {
-		return nil, fmt.Errorf("empty response")
-	}
-
-	body, err := io.ReadAll(rawResponse.Body)
-	if err != nil {
-		return nil, fmt.Errorf("read api response: %w", err)
-	}
-	rawResponse.Body.Close()
-	rawResponse.Body = io.NopCloser(bytes.NewBuffer(body))
-
-	return &TableLookupResult{Response: response, RawBody: body}, nil
+	return response, nil
 }
 
-func (r *Runtime) DescribeTableStructure(ctx context.Context, instanceName, dbName, tableName, schemaName string) (*DescribeTableResult, error) {
-	if r == nil {
-		return nil, fmt.Errorf("runtime is nil")
-	}
-
-	ctx = r.effectiveContext(ctx)
+func (r *Runtime) DescribeTableStructure(instanceName, dbName, tableName, schemaName string) (*DescribeTableResult, error) {
 	payload := map[string]any{
 		"instance_name": strings.TrimSpace(instanceName),
 		"db_name":       strings.TrimSpace(dbName),
@@ -118,25 +91,24 @@ func (r *Runtime) DescribeTableStructure(ctx context.Context, instanceName, dbNa
 		"schema_name":   strings.TrimSpace(schemaName),
 	}
 
-	body, err := r.postJSON(ctx, "/api/v1/sqlquery/describetable/", payload)
+	body, err := r.postJSON("/api/v1/sqlquery/describetable/", payload)
 	if err != nil {
 		return nil, err
 	}
 
-	var envelope QueryEnvelope
-	if err := json.Unmarshal(body, &envelope); err != nil {
+	envelope, err := decodeQueryEnvelope(body)
+	if err != nil {
 		return nil, fmt.Errorf("decode describe-table response: %w", err)
 	}
 
 	return &DescribeTableResult{Envelope: envelope, RawBody: body}, nil
 }
 
-func (r *Runtime) ExecuteQuery(ctx context.Context, instanceName, dbName, schemaName, tableName, sqlContent string, limitNum int) (*ExecuteQueryResult, error) {
+func (r *Runtime) ExecuteQuery(instanceName, dbName, schemaName, tableName, sqlContent string, limitNum int) (*ExecuteQueryResult, error) {
 	if r == nil {
 		return nil, fmt.Errorf("runtime is nil")
 	}
 
-	ctx = r.effectiveContext(ctx)
 	payload := map[string]any{
 		"instance_name": strings.TrimSpace(instanceName),
 		"db_name":       strings.TrimSpace(dbName),
@@ -146,20 +118,30 @@ func (r *Runtime) ExecuteQuery(ctx context.Context, instanceName, dbName, schema
 		"limit_num":     limitNum,
 	}
 
-	body, err := r.postJSON(ctx, "/api/v1/sqlquery/execute/", payload)
+	body, err := r.postJSON("/api/v1/sqlquery/execute/", payload)
 	if err != nil {
 		return nil, err
 	}
 
-	var envelope QueryEnvelope
-	if err := json.Unmarshal(body, &envelope); err != nil {
+	envelope, err := decodeQueryEnvelope(body)
+	if err != nil {
 		return nil, fmt.Errorf("decode execute response: %w", err)
 	}
 
 	return &ExecuteQueryResult{Envelope: envelope, RawBody: body}, nil
 }
 
-func (r *Runtime) postJSON(ctx context.Context, path string, payload any) ([]byte, error) {
+func decodeQueryEnvelope(body []byte) (QueryEnvelope, error) {
+	var envelope QueryEnvelope
+	decoder := json.NewDecoder(bytes.NewReader(body))
+	decoder.UseNumber()
+	if err := decoder.Decode(&envelope); err != nil {
+		return QueryEnvelope{}, err
+	}
+	return envelope, nil
+}
+
+func (r *Runtime) postJSON(path string, payload any) ([]byte, error) {
 	if r == nil {
 		return nil, fmt.Errorf("runtime is nil")
 	}
@@ -174,24 +156,20 @@ func (r *Runtime) postJSON(ctx context.Context, path string, payload any) ([]byt
 		return nil, fmt.Errorf("marshal request body: %w", err)
 	}
 
-	ctx = r.effectiveContext(ctx)
-
 	localVarHeaderParams := make(map[string]string)
-	if ctx != nil {
-		// API Key Authentication
-		if auth, ok := ctx.Value(openapi.ContextAPIKeys).(map[string]openapi.APIKey); ok {
-			if apiKey, ok := auth["knoxApiToken"]; ok {
-				var key string
-				if apiKey.Prefix != "" {
-					key = apiKey.Prefix + " " + apiKey.Key
-				} else {
-					key = apiKey.Key
-				}
-				localVarHeaderParams["Authorization"] = key
+	// API Key Authentication
+	if auth, ok := r.Context.Value(openapi.ContextAPIKeys).(map[string]openapi.APIKey); ok {
+		if apiKey, ok := auth["knoxApiToken"]; ok {
+			var key string
+			if apiKey.Prefix != "" {
+				key = apiKey.Prefix + " " + apiKey.Key
+			} else {
+				key = apiKey.Key
 			}
+			localVarHeaderParams["Authorization"] = key
 		}
 	}
-	request, err := http.NewRequestWithContext(ctx, http.MethodPost, baseURL+path, bytes.NewReader(requestBody))
+	request, err := http.NewRequestWithContext(r.Context, http.MethodPost, baseURL+path, bytes.NewReader(requestBody))
 	if err != nil {
 		return nil, fmt.Errorf("build request: %w", err)
 	}

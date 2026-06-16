@@ -26,7 +26,7 @@ var tableSchemaCmd = &cobra.Command{
 		instance := strings.TrimSpace(tableSchemaInstance)
 		database := strings.TrimSpace(tableSchemaDatabase)
 		tableName := strings.TrimSpace(tableSchemaName)
-		result, err := runtime.DescribeTableStructure(cmd.Context(), instance, database, tableName, "")
+		result, err := runtime.DescribeTableStructure(instance, database, tableName, "")
 		if err != nil {
 			return err
 		}
