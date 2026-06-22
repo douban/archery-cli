@@ -10,7 +10,7 @@ kind: Pod
 spec:
   containers:
   - name: go
-    image: ghcr.io/gythialy/golang-cross-builder:v1.26.4-0-bookworm
+    image: ghcr.io/gythialy/golang-cross-builder:v1.23.2-0-bullseye
     tty: true
     env:
     - name: GOPROXY
