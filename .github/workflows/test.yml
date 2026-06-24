@@ -14,14 +14,12 @@ jobs:
         cache: false
     - run: go test ./...
 
-    - run: go build .
+    - run: go build . -o archery-cli-${{ matrix.os }}
       env:
         CGO_ENABLED: 0
     - uses: actions/upload-artifact@v7
       with:
-        name: archery-cli-${{ matrix.os }}-1.24
         archive: false
         path: |
-          archery-cli
-          archery-cli.exe
+          archery-cli*
         
